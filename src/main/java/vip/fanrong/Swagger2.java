@@ -1,6 +1,5 @@
 package vip.fanrong;
 
-import io.swagger.models.Contact;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import springfox.documentation.builders.ApiInfoBuilder;
@@ -30,9 +29,9 @@ public class Swagger2 {
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
                 .title("Spring Boot中使用Swagger2构建RESTful APIs")
-                .description("Hello world")
+                .description("初次尝试，后面会逐渐增加一些有意思的API。")
                 .termsOfServiceUrl("")
-                .contact("FanRong")
+                .contact("fanrong330@gmail.com")
                 .version("1.0")
                 .build();
     }
