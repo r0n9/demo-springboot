@@ -23,13 +23,14 @@ public class Swagger2 {
                 .apiInfo(apiInfo())
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("vip.fanrong"))
-                .paths(PathSelectors.any()).build();
+                .paths(PathSelectors.any())
+                .build();
     }
 
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
-                .title("Spring Boot中使用Swagger2构建RESTful APIs")
-                .description("初次尝试，后面会逐渐增加一些有意思的API。")
+                .title("个人开放API")
+                .description("使用SpringBoot和Swagger2构建的RESTful APIs，后面会逐渐增加一些有意思的API，权限验证也要加上去。")
                 .termsOfServiceUrl("")
                 .contact("fanrong330@gmail.com")
                 .version("1.0")
