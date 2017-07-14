@@ -33,7 +33,8 @@ public class Swagger2 {
                 .termsOfServiceUrl("")
                 .contact("fanrong330@gmail.com")
                 .version("1.0")
-                .license("")
+                .license("Apache 2.0")
+                .licenseUrl("http://www.apache.org/licenses/LICENSE-2.0.html")
                 .build();
     }
 
