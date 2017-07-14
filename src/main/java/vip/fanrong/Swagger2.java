@@ -33,6 +33,7 @@ public class Swagger2 {
                 .termsOfServiceUrl("")
                 .contact("fanrong330@gmail.com")
                 .version("1.0")
+                .license("")
                 .build();
     }
 
