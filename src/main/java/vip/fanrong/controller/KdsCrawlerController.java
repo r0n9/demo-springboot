@@ -2,7 +2,6 @@ package vip.fanrong.controller;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
 import vip.fanrong.common.util.CrawlerUtil;
@@ -22,9 +21,6 @@ import java.util.regex.Pattern;
 @Api(value = "KDS Crawler API", description = "v1")
 public class KdsCrawlerController {
 
-    private String UrlReply1 = "https://m.kdslife.com/f_15_0_2_";
-    private String UrlReply2 = "_0.html";
-
     private String homepageUrl = "https://m.kdslife.com/";
 
     private Pattern postPattern = Pattern.compile("<li>.+?</li>", Pattern.CASE_INSENSITIVE | Pattern.DOTALL); // 支持匹配多行，忽略\n
@@ -35,21 +31,36 @@ public class KdsCrawlerController {
 
 
     @ApiOperation(value = "获取最新回复的帖子", notes = "可以指定第几页，默认第一页")
-    @RequestMapping(value = "/getFromPage", method = RequestMethod.GET)
-    public ObjectNode getLatestReply(@RequestParam(value = "pageNo", required = false, defaultValue = "1") int pageNo) {
+    @RequestMapping(value = "/getReply", method = RequestMethod.GET)
+    public ObjectNode getByReplyOrder(@RequestParam(value = "pageNo", required = false, defaultValue = "1") int pageNo) {
+        String urlReply1 = "https://m.kdslife.com/f_15_0_2_";
+        String urlReply2 = "_0.html";
+        String url = urlReply1 + pageNo + urlReply2;
+        return this.getNodeByUrl(url);
+    }
 
-        String url = UrlReply1 + pageNo + UrlReply2;
+    @ApiOperation(value = "获取最新发布的帖子", notes = "可以指定第几页，默认第一页")
+    @RequestMapping(value = "/getCreate", method = RequestMethod.GET)
+    public ObjectNode getByCreateOrder(@RequestParam(value = "pageNo", required = false, defaultValue = "1") int pageNo) {
+        String urlCreate1 = "https://m.kdslife.com/f_15_0_3_";
+        String urlCreate2 = "_0.html";
+        String url = urlCreate1 + pageNo + urlCreate2;
+        return getNodeByUrl(url);
+    }
 
+    private ObjectNode getNodeByUrl(String url) {
         String html = CrawlerUtil.request(url);
-        List<Post> posts = getPostsFromOnePage(html);
+        List<Post> posts = getPostList(html);
 
         ObjectNode objectNode = JsonUtil.createObjectNode();
-
+        objectNode.put("count", posts.size());
         objectNode.putPOJO("posts", posts);
+        objectNode.put("date", DateUtil.getDateNow());
         return objectNode;
     }
 
-    private List<Post> getPostsFromOnePage(String pageHtml) {
+
+    private List<Post> getPostList(String pageHtml) {
         Matcher matcher = postPattern.matcher(pageHtml);
         List<Post> posts = new ArrayList<>();
         while (matcher.find()) {
@@ -70,37 +81,14 @@ public class KdsCrawlerController {
     }
 
     class Post {
-        public Post(String title, String link, String imgUrl) {
-            this.title = title;
-            this.link = link;
-            this.imgUrl = imgUrl;
-        }
 
         String title;
         String link;
         String imgUrl;
 
-        public String getTitle() {
-            return title;
-        }
-
-        public void setTitle(String title) {
+        Post(String title, String link, String imgUrl) {
             this.title = title;
-        }
-
-        public String getLink() {
-            return link;
-        }
-
-        public void setLink(String link) {
             this.link = link;
-        }
-
-        public String getImgUrl() {
-            return imgUrl;
-        }
-
-        public void setImgUrl(String imgUrl) {
             this.imgUrl = imgUrl;
         }
 
