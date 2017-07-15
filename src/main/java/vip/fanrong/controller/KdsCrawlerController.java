@@ -45,7 +45,7 @@ public class KdsCrawlerController {
         String urlCreate1 = "https://m.kdslife.com/f_15_0_3_";
         String urlCreate2 = "_0.html";
         String url = urlCreate1 + pageNo + urlCreate2;
-        return getNodeByUrl(url);
+        return this.getNodeByUrl(url);
     }
 
     private ObjectNode getNodeByUrl(String url) {
@@ -89,6 +89,30 @@ public class KdsCrawlerController {
         Post(String title, String link, String imgUrl) {
             this.title = title;
             this.link = link;
+            this.imgUrl = imgUrl;
+        }
+
+        public String getTitle() {
+            return title;
+        }
+
+        public void setTitle(String title) {
+            this.title = title;
+        }
+
+        public String getLink() {
+            return link;
+        }
+
+        public void setLink(String link) {
+            this.link = link;
+        }
+
+        public String getImgUrl() {
+            return imgUrl;
+        }
+
+        public void setImgUrl(String imgUrl) {
             this.imgUrl = imgUrl;
         }
 
