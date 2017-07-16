@@ -75,6 +75,11 @@ public class KdsCrawlerController {
             Matcher linkMather = linkPattern.matcher(postStr);
             String link = linkMather.find() ? homepageUrl + linkMather.group(1) : "";
 
+            if ("".equals(title) || "".equals(link)) {
+                // remove AD
+                continue;
+            }
+
             posts.add(new Post(title, link, imgUrl));
         }
         return posts;
