@@ -29,6 +29,10 @@ public class KdsCrawlerController {
     private Pattern titlePattern = Pattern.compile("title=\"(.*?)\" target");
     private Pattern linkPattern = Pattern.compile("<a href=\"(.*?\\.html)");
 
+    private Pattern replytoPattern = Pattern.compile("<span class=\"replyto\">(.*?)</span>");
+    private Pattern usertoPattern = Pattern.compile("<span class=\"userto\">(.*?)</span>");
+    private Pattern asidePattern = Pattern.compile("<aside>(.*?)</aside>");
+
 
     @ApiOperation(value = "获取最新回复的帖子", notes = "可以指定第几页，默认第一页")
     @RequestMapping(value = "/getReply", method = RequestMethod.GET)
@@ -67,20 +71,30 @@ public class KdsCrawlerController {
             String postStr = matcher.group();
 
             Matcher imgUrlMat = imgPattern.matcher(postStr);
-            String imgUrl = imgUrlMat.find() ? imgUrlMat.group(1) : "";
+            String imgUrl = imgUrlMat.find() ? imgUrlMat.group(1).trim() : "";
 
             Matcher titleMatcher = titlePattern.matcher(postStr);
-            String title = titleMatcher.find() ? titleMatcher.group(1) : "";
+            String title = titleMatcher.find() ? titleMatcher.group(1).trim() : "";
 
-            Matcher linkMather = linkPattern.matcher(postStr);
-            String link = linkMather.find() ? homepageUrl + linkMather.group(1) : "";
+            Matcher linkMatcher = linkPattern.matcher(postStr);
+            String link = linkMatcher.find() ? homepageUrl + linkMatcher.group(1).trim() : "";
+
+            Matcher replytoMatcher = replytoPattern.matcher(postStr);
+            String replyto = replytoMatcher.find() ? replytoMatcher.group(1).trim() : "0";
+
+            Matcher usertoMatcher = usertoPattern.matcher(postStr);
+            String userto = usertoMatcher.find() ? usertoMatcher.group(1).trim() : "0";
+
+            Matcher asideMatcher = asidePattern.matcher(postStr);
+            String aside = asideMatcher.find() ? asideMatcher.group(1).trim() : "";
+
 
             if ("".equals(title) || "".equals(link)) {
                 // remove AD
                 continue;
             }
 
-            posts.add(new Post(title, link, imgUrl));
+            posts.add(new Post(title, link, imgUrl, replyto, userto, aside));
         }
         return posts;
     }
@@ -91,10 +105,17 @@ public class KdsCrawlerController {
         String link;
         String imgUrl;
 
-        Post(String title, String link, String imgUrl) {
+        String replyto;
+        String userto;
+        String aside;
+
+        public Post(String title, String link, String imgUrl, String replyto, String userto, String aside) {
             this.title = title;
             this.link = link;
             this.imgUrl = imgUrl;
+            this.replyto = replyto;
+            this.userto = userto;
+            this.aside = aside;
         }
 
         public String getTitle() {
@@ -121,13 +142,28 @@ public class KdsCrawlerController {
             this.imgUrl = imgUrl;
         }
 
-        @Override
-        public String toString() {
-            return "Post{" +
-                    "title='" + title + '\'' +
-                    ", link='" + link + '\'' +
-                    ", imgUrl='" + imgUrl + '\'' +
-                    '}';
+        public String getReplyto() {
+            return replyto;
+        }
+
+        public void setReplyto(String replyto) {
+            this.replyto = replyto;
+        }
+
+        public String getUserto() {
+            return userto;
+        }
+
+        public void setUserto(String userto) {
+            this.userto = userto;
+        }
+
+        public String getAside() {
+            return aside;
+        }
+
+        public void setAside(String aside) {
+            this.aside = aside;
         }
     }
 }
