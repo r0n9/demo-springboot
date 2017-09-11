@@ -3,15 +3,9 @@ package vip.fanrong.controller;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import vip.fanrong.common.util.CrawlerUtil;
-import vip.fanrong.common.util.DateUtil;
-import vip.fanrong.common.util.JsonUtil;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import vip.fanrong.service.KdsCrawlerService;
 
 /**
  * Created by Rong on 2017/7/14.
@@ -21,17 +15,14 @@ import java.util.regex.Pattern;
 @Api(value = "KDS Crawler API", description = "v1")
 public class KdsCrawlerController {
 
-    private String homepageUrl = "https://m.kdslife.com/";
+    @Autowired
+    private KdsCrawlerService kdsCrawlerService;
 
-    private Pattern postPattern = Pattern.compile("<li>.+?</li>", Pattern.CASE_INSENSITIVE | Pattern.DOTALL); // 支持匹配多行，忽略\n
-
-    private Pattern imgPattern = Pattern.compile("<img src=\"(.*?)@");
-    private Pattern titlePattern = Pattern.compile("title=\"(.*?)\" target");
-    private Pattern linkPattern = Pattern.compile("<a href=\"(.*?\\.html)");
-
-    private Pattern replytoPattern = Pattern.compile("<span class=\"replyto\">(.*?)</span>");
-    private Pattern usertoPattern = Pattern.compile("<span class=\"userto\">(.*?)</span>");
-    private Pattern asidePattern = Pattern.compile("<aside>(.*?)</aside>");
+    @ApiOperation(value = "获取近期热门帖", notes = "按照回帖数量排行")
+    @RequestMapping(value = "/getHotTopics", method = RequestMethod.GET)
+    public ObjectNode getHotTopics(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit) {
+        return kdsCrawlerService.getHotTopics(limit);
+    }
 
 
     @ApiOperation(value = "获取最新回复的帖子", notes = "可以指定第几页，默认第一页")
@@ -40,7 +31,7 @@ public class KdsCrawlerController {
         String urlReply1 = "https://m.kdslife.com/f_15_0_2_";
         String urlReply2 = "_0.html";
         String url = urlReply1 + pageNo + urlReply2;
-        return this.getNodeByUrl(url);
+        return kdsCrawlerService.getNodeByUrl(url);
     }
 
     @ApiOperation(value = "获取最新发布的帖子", notes = "可以指定第几页，默认第一页")
@@ -49,121 +40,8 @@ public class KdsCrawlerController {
         String urlCreate1 = "https://m.kdslife.com/f_15_0_3_";
         String urlCreate2 = "_0.html";
         String url = urlCreate1 + pageNo + urlCreate2;
-        return this.getNodeByUrl(url);
-    }
-
-    private ObjectNode getNodeByUrl(String url) {
-        String html = CrawlerUtil.request(url);
-        List<Post> posts = getPostList(html);
-
-        ObjectNode objectNode = JsonUtil.createObjectNode();
-        objectNode.put("count", posts.size());
-        objectNode.putPOJO("posts", posts);
-        objectNode.put("date", DateUtil.getDateNow());
-        return objectNode;
+        return kdsCrawlerService.getNodeByUrl(url);
     }
 
 
-    private List<Post> getPostList(String pageHtml) {
-        Matcher matcher = postPattern.matcher(pageHtml);
-        List<Post> posts = new ArrayList<>();
-        while (matcher.find()) {
-            String postStr = matcher.group();
-
-            Matcher imgUrlMat = imgPattern.matcher(postStr);
-            String imgUrl = imgUrlMat.find() ? imgUrlMat.group(1).trim() : "";
-
-            Matcher titleMatcher = titlePattern.matcher(postStr);
-            String title = titleMatcher.find() ? titleMatcher.group(1).trim() : "";
-
-            Matcher linkMatcher = linkPattern.matcher(postStr);
-            String link = linkMatcher.find() ? homepageUrl + linkMatcher.group(1).trim() : "";
-
-            Matcher replytoMatcher = replytoPattern.matcher(postStr);
-            String replyto = replytoMatcher.find() ? replytoMatcher.group(1).trim() : "0";
-
-            Matcher usertoMatcher = usertoPattern.matcher(postStr);
-            String userto = usertoMatcher.find() ? usertoMatcher.group(1).trim() : "0";
-
-            Matcher asideMatcher = asidePattern.matcher(postStr);
-            String aside = asideMatcher.find() ? asideMatcher.group(1).trim() : "";
-
-
-            if ("".equals(title) || "".equals(link)) {
-                // remove AD
-                continue;
-            }
-
-            posts.add(new Post(title, link, imgUrl, replyto, userto, aside));
-        }
-        return posts;
-    }
-
-    class Post {
-
-        String title;
-        String link;
-        String imgUrl;
-
-        String replyto;
-        String userto;
-        String aside;
-
-        public Post(String title, String link, String imgUrl, String replyto, String userto, String aside) {
-            this.title = title;
-            this.link = link;
-            this.imgUrl = imgUrl;
-            this.replyto = replyto;
-            this.userto = userto;
-            this.aside = aside;
-        }
-
-        public String getTitle() {
-            return title;
-        }
-
-        public void setTitle(String title) {
-            this.title = title;
-        }
-
-        public String getLink() {
-            return link;
-        }
-
-        public void setLink(String link) {
-            this.link = link;
-        }
-
-        public String getImgUrl() {
-            return imgUrl;
-        }
-
-        public void setImgUrl(String imgUrl) {
-            this.imgUrl = imgUrl;
-        }
-
-        public String getReplyto() {
-            return replyto;
-        }
-
-        public void setReplyto(String replyto) {
-            this.replyto = replyto;
-        }
-
-        public String getUserto() {
-            return userto;
-        }
-
-        public void setUserto(String userto) {
-            this.userto = userto;
-        }
-
-        public String getAside() {
-            return aside;
-        }
-
-        public void setAside(String aside) {
-            this.aside = aside;
-        }
-    }
 }
