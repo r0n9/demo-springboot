@@ -122,29 +122,23 @@ public class KdsCrawlerService {
 
     private DateFormat asideFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
-    public ObjectNode getNodeByUrl(String url) {
-        List<Post> posts = getPostList(url);
-
-        ObjectNode objectNode = JsonUtil.createObjectNode();
-        objectNode.put("count", posts.size());
-        objectNode.putPOJO("posts", posts);
-        objectNode.put("date", DateUtil.getDateNow());
-        return objectNode;
+    public ObjectNode getByReplyOrder(int pageNo) {
+        String url = getReplyPageUrl(pageNo);
+        return getNodeByUrl(url);
+    }
+    public ObjectNode getByCreateOrder(int pageNo) {
+        String url = getCreatePageUrl(pageNo);
+        return getNodeByUrl(url);
     }
 
-    public ObjectNode getHotTopics(int limit){
+    public ObjectNode getHotTopics(int limit) {
         Set<Post> set = new HashSet<>();
         for (int i = 0; i < 10; i++) {
-            String urlReply1 = "https://m.kdslife.com/f_15_0_2_";
-            String urlReply2 = "_0.html";
-            String url = urlReply1 + i + urlReply2;
+            String url = this.getReplyPageUrl(i);
             set.addAll(this.getPostList(url));
         }
-
         for (int i = 0; i < 5; i++) {
-            String urlReply1 = "https://m.kdslife.com/f_15_0_3_";
-            String urlReply2 = "_0.html";
-            String url = urlReply1 + i + urlReply2;
+            String url = this.getCreatePageUrl(i);
             set.addAll(this.getPostList(url));
         }
 
@@ -163,6 +157,31 @@ public class KdsCrawlerService {
         ObjectNode objectNode = JsonUtil.createObjectNode();
         objectNode.put("count", collect.size());
         objectNode.putPOJO("posts", collect);
+        objectNode.put("date", DateUtil.getDateNow());
+        return objectNode;
+    }
+
+    private String getReplyPageUrl(int pageNo) {
+        String urlReply1 = "https://m.kdslife.com/f_15_0_2_";
+        String urlReply2 = "_0.html";
+        String url = urlReply1 + pageNo + urlReply2;
+        return url;
+    }
+
+    private String getCreatePageUrl(int pageNo) {
+        String urlCreate1 = "https://m.kdslife.com/f_15_0_3_";
+        String urlCreate2 = "_0.html";
+        String url = urlCreate1 + pageNo + urlCreate2;
+        return url;
+    }
+
+
+    private ObjectNode getNodeByUrl(String url) {
+        List<Post> posts = getPostList(url);
+
+        ObjectNode objectNode = JsonUtil.createObjectNode();
+        objectNode.put("count", posts.size());
+        objectNode.putPOJO("posts", posts);
         objectNode.put("date", DateUtil.getDateNow());
         return objectNode;
     }

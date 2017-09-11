@@ -24,23 +24,16 @@ public class KdsCrawlerController {
         return kdsCrawlerService.getHotTopics(limit);
     }
 
-
-    @ApiOperation(value = "获取最新回复的帖子", notes = "可以指定第几页，默认第一页")
+    @ApiOperation(value = "获取最新回复帖", notes = "可以指定第几页，默认第一页")
     @RequestMapping(value = "/getReply", method = RequestMethod.GET)
     public ObjectNode getByReplyOrder(@RequestParam(value = "pageNo", required = false, defaultValue = "1") int pageNo) {
-        String urlReply1 = "https://m.kdslife.com/f_15_0_2_";
-        String urlReply2 = "_0.html";
-        String url = urlReply1 + pageNo + urlReply2;
-        return kdsCrawlerService.getNodeByUrl(url);
+        return kdsCrawlerService.getByReplyOrder(pageNo);
     }
 
-    @ApiOperation(value = "获取最新发布的帖子", notes = "可以指定第几页，默认第一页")
+    @ApiOperation(value = "获取最新发布帖", notes = "可以指定第几页，默认第一页")
     @RequestMapping(value = "/getCreate", method = RequestMethod.GET)
     public ObjectNode getByCreateOrder(@RequestParam(value = "pageNo", required = false, defaultValue = "1") int pageNo) {
-        String urlCreate1 = "https://m.kdslife.com/f_15_0_3_";
-        String urlCreate2 = "_0.html";
-        String url = urlCreate1 + pageNo + urlCreate2;
-        return kdsCrawlerService.getNodeByUrl(url);
+        return kdsCrawlerService.getByCreateOrder(pageNo);
     }
 
 
