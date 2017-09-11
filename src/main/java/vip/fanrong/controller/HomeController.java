@@ -12,6 +12,6 @@ public class HomeController {
     public String index() {
         return "<h1>Welcome!</h1>" +
                 " <br> " +
-                "<p>Click <a href=\"swagger-ui.html#\" onClick=\"javascript :history.back(-1);\">here</a> to see the API doc.</p>";
+                "<p>Click <a href=\"swagger-ui.html#\">here</a> to see the API doc.</p>";
     }
 }
