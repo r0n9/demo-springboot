@@ -10,8 +10,8 @@ import org.springframework.core.io.ClassPathResource;
 /**
  * Created by Rong on 2017/8/8.
  */
-@Configuration
-@EnableCaching
+@Configuration // 为spring-boot注解，主要标注此为配置类，优先扫描。
+@EnableCaching // 标注启动了缓存
 public class CacheConfiguration {
     /*
      * ehcache 主要的管理器
@@ -24,7 +24,7 @@ public class CacheConfiguration {
     /*
      * 据shared与否的设置,Spring分别通过CacheManager.create()或new CacheManager()方式来创建一个ehcache基地.
      */
-    @Bean
+    @Bean // 向spring容器中加入bean
     public EhCacheManagerFactoryBean ehCacheManagerFactoryBean() {
         EhCacheManagerFactoryBean cacheManagerFactoryBean = new EhCacheManagerFactoryBean();
         cacheManagerFactoryBean.setConfigLocation(new ClassPathResource("ehcache.xml"));
