@@ -1,6 +1,9 @@
 package vip.fanrong.service;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import vip.fanrong.common.util.CrawlerUtil;
 import vip.fanrong.common.util.DateUtil;
@@ -21,6 +24,10 @@ import static java.util.stream.Collectors.toList;
  */
 @Service
 public class KdsCrawlerService {
+
+    private static final Log LOGGER = LogFactory.getLog(KdsCrawlerService.class);
+
+    public static final String DEMO_CACHE_NAME = "kds";
 
     class Post {
 
@@ -126,12 +133,15 @@ public class KdsCrawlerService {
         String url = getReplyPageUrl(pageNo);
         return getNodeByUrl(url);
     }
+
     public ObjectNode getByCreateOrder(int pageNo) {
         String url = getCreatePageUrl(pageNo);
         return getNodeByUrl(url);
     }
 
+    @Cacheable(value = DEMO_CACHE_NAME, key="'hot_topics_'+#limit")
     public ObjectNode getHotTopics(int limit) {
+        LOGGER.debug("GetHotTopics()没有使用缓存 limit=" + limit);
         Set<Post> set = new HashSet<>();
         for (int i = 0; i < 10; i++) {
             String url = this.getReplyPageUrl(i);
