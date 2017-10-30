@@ -6,8 +6,8 @@
     <defaultCache eternal="false" maxElementsInMemory="1000" overflowToDisk="false" diskPersistent="false"
                   timeToIdleSeconds="0" timeToLiveSeconds="600" memoryStoreEvictionPolicy="LRU"/>
 
-    <!-- 缓存10分钟 -->
+    <!-- 非永久缓存，缓存30分钟 -->
     <cache name="kds" eternal="false" maxElementsInMemory="100" overflowToDisk="false" diskPersistent="false"
-           timeToIdleSeconds="0" timeToLiveSeconds="600" memoryStoreEvictionPolicy="LRU"/>
+           timeToIdleSeconds="1800" timeToLiveSeconds="1800" memoryStoreEvictionPolicy="LRU"/>
 
 </ehcache>

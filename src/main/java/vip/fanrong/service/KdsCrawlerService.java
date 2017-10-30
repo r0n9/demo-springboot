@@ -154,7 +154,7 @@ public class KdsCrawlerService {
 
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(new Date());
-        calendar.set(Calendar.DATE, calendar.get(Calendar.DATE) - 5); // 五天内
+        calendar.set(Calendar.DATE, calendar.get(Calendar.DATE) - 7); // 一周内
         List<Post> collect = set.stream().filter((Post t) -> {
             try {
                 return asideFormat.parse(t.aside).after(calendar.getTime());
