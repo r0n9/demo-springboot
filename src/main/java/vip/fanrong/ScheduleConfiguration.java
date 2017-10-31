@@ -21,16 +21,6 @@ public class ScheduleConfiguration implements SchedulingConfigurer {
 
     @Override
     public void configureTasks(ScheduledTaskRegistrar scheduledTaskRegistrar) {
-        scheduledTaskRegistrar.addCronTask(new Runnable() {
-            @Override
-            public void run() {
-                if(kdsCrawlerService == null){
-                    System.out.println("周期配置里无法拿到 KdsCrawlerService。。。。。");
-                } else {
-                    System.out.println("执行时间：" + Calendar.getInstance().getTime());
-                    kdsCrawlerService.getHotTopics(20);
-                }
-            }
-        }, "0 */30 * * * ?");
+        scheduledTaskRegistrar.addCronTask(() -> kdsCrawlerService.getHotTopics(20), "0 0,30 * * * ?");
     }
 }

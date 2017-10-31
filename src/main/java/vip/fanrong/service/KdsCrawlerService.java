@@ -9,9 +9,9 @@ import vip.fanrong.common.util.CrawlerUtil;
 import vip.fanrong.common.util.DateUtil;
 import vip.fanrong.common.util.JsonUtil;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -127,7 +127,7 @@ public class KdsCrawlerService {
     private Pattern usertoPattern = Pattern.compile("<span class=\"userto\">(.*?)</span>");
     private Pattern asidePattern = Pattern.compile("<aside>(.*?)</aside>");
 
-    private DateFormat asideFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+    private DateTimeFormatter asideFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm").withZone(ZoneId.of("GMT+08:00")).withLocale(Locale.US);
 
     public ObjectNode getByReplyOrder(int pageNo) {
         String url = getReplyPageUrl(pageNo);
@@ -139,9 +139,9 @@ public class KdsCrawlerService {
         return getNodeByUrl(url);
     }
 
-    @Cacheable(value = DEMO_CACHE_NAME, key="'hot_topics_'+#limit")
+    @Cacheable(value = DEMO_CACHE_NAME, key = "'hot_topics_'+#limit")
     public ObjectNode getHotTopics(int limit) {
-        LOGGER.debug("GetHotTopics()没有使用缓存 limit=" + limit);
+        LOGGER.info("Processing method GetHotTopics(" + limit + ") at " + Calendar.getInstance().getTime());
         Set<Post> set = new HashSet<>();
         for (int i = 0; i < 10; i++) {
             String url = this.getReplyPageUrl(i);
@@ -155,18 +155,14 @@ public class KdsCrawlerService {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(new Date());
         calendar.set(Calendar.DATE, calendar.get(Calendar.DATE) - 7); // 一周内
-        List<Post> collect = set.stream().filter((Post t) -> {
-            try {
-                return asideFormat.parse(t.aside).after(calendar.getTime());
-            } catch (ParseException e) {
-                e.printStackTrace();
-                return true;
-            }
-        }).sorted(comparing(Post::getReplyto).reversed()).limit(limit).collect(toList());
-
+        List<Post> hotTopics = set.stream()
+                .filter((Post t) -> Date.from(ZonedDateTime.parse(t.aside, asideFormat).toInstant()).after(calendar.getTime()))
+                .sorted(comparing(Post::getReplyto).reversed())
+                .limit(limit)
+                .collect(toList());
         ObjectNode objectNode = JsonUtil.createObjectNode();
-        objectNode.put("count", collect.size());
-        objectNode.putPOJO("posts", collect);
+        objectNode.put("count", hotTopics.size());
+        objectNode.putPOJO("posts", hotTopics);
         objectNode.put("date", DateUtil.getDateNow());
         return objectNode;
     }

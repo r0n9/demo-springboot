@@ -7,7 +7,7 @@
                   timeToIdleSeconds="0" timeToLiveSeconds="600" memoryStoreEvictionPolicy="LRU"/>
 
     <!-- 非永久缓存，缓存30分钟 -->
-    <cache name="kds" eternal="false" maxElementsInMemory="100" overflowToDisk="false" diskPersistent="false"
+    <cache name="kds" eternal="false" maxElementsInMemory="200" overflowToDisk="false" diskPersistent="false"
            timeToIdleSeconds="1800" timeToLiveSeconds="1800" memoryStoreEvictionPolicy="LRU"/>
 
 </ehcache>
