@@ -141,7 +141,7 @@ public class KdsCrawlerService {
 
     @Cacheable(value = DEMO_CACHE_NAME, key = "'hot_topics_'+#limit")
     public ObjectNode getHotTopics(int limit) {
-        LOGGER.info("Processing method GetHotTopics(" + limit + ") at " + Calendar.getInstance().getTime());
+        LOGGER.info("Processing method GetHotTopics(" + limit + ") at " + Calendar.getInstance(TimeZone.getTimeZone(ZoneId.of("GMT+08:00"))).getTime());
         Set<Post> set = new HashSet<>();
         for (int i = 0; i < 10; i++) {
             String url = this.getReplyPageUrl(i);
