@@ -21,6 +21,9 @@ public class ScheduleConfiguration implements SchedulingConfigurer {
 
     @Override
     public void configureTasks(ScheduledTaskRegistrar scheduledTaskRegistrar) {
-        scheduledTaskRegistrar.addCronTask(() -> kdsCrawlerService.getHotTopics(20), "0 0,30 * * * ?");
+        scheduledTaskRegistrar.addCronTask(() -> {
+            kdsCrawlerService.clearHotTopicsCache(20);
+            kdsCrawlerService.getHotTopics(20);
+        }, "0 0/30 * * * ?");
     }
 }

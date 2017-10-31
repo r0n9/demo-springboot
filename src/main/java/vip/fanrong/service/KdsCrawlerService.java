@@ -3,6 +3,7 @@ package vip.fanrong.service;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import vip.fanrong.common.util.CrawlerUtil;
@@ -137,6 +138,11 @@ public class KdsCrawlerService {
     public ObjectNode getByCreateOrder(int pageNo) {
         String url = getCreatePageUrl(pageNo);
         return getNodeByUrl(url);
+    }
+
+    @CacheEvict(value = DEMO_CACHE_NAME, key = "'hot_topics_'+#limit")
+    public void clearHotTopicsCache(int limit) {
+        LOGGER.info("Clear hot topics cache for limit (" + limit + ") at " + Calendar.getInstance(TimeZone.getTimeZone(ZoneId.of("GMT+08:00"))).getTime());
     }
 
     @Cacheable(value = DEMO_CACHE_NAME, key = "'hot_topics_'+#limit")
